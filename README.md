@@ -207,6 +207,7 @@ We do not claim more than what is in [PRIOR_ART.md](PRIOR_ART.md). That file lis
 You need Python 3.
 
 ```bash
+cd experiments
 pip install -r requirements.txt
 python -m pytest test_lmf.py test_revocation.py
 python run_fix.py && python make_fix_report.py
@@ -215,6 +216,8 @@ python run_fix.py && python make_fix_report.py
 The last command re-makes the results for the fix. It reuses the saved runs in `runs_fix/`, so it takes seconds. To recompute everything from scratch, delete `runs/` and `runs_fix/` and run `python run_all.py` and `python run_fix.py`. That took us about 7 minutes and 4 minutes on a multi-core machine.
 
 ## Where things are
+
+All files in this table live in the `experiments/` folder, except `PRIOR_ART.md` and `docs/`.
 
 | File | What it is |
 |---|---|
