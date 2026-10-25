@@ -6,10 +6,10 @@
 | (a) same, counting only groups that appear in some ACL | 9,859 [9,831–9,912] |
 | (a) same, plus users with an individual grant (private/ad-hoc doc) made unique | 9,994 [9,990–9,998] |
 | (a) users alone in their signature class | 97.6% [97.2–98.4] |
-| (b) distinct document labels — by ACL set (symbolic) | 28,820 [28,641–28,915] |
-| (b) distinct document labels — by audience (canonical) | 27,941 [27,760–28,058] |
-| (c) distinct derived-artifact labels — symbolic (set of input ACLs) | 55,345 [54,459–56,107] |
-| (c) distinct derived-artifact labels — by audience (canonical) | 19,028 [18,676–19,515] |
+| (b) distinct document labels - by ACL set (symbolic) | 28,820 [28,641–28,915] |
+| (b) distinct document labels - by audience (canonical) | 27,941 [27,760–28,058] |
+| (c) distinct derived-artifact labels - symbolic (set of input ACLs) | 55,345 [54,459–56,107] |
+| (c) distinct derived-artifact labels - by audience (canonical) | 19,028 [18,676–19,515] |
 | (d) median principals per doc label (over distinct labels) | 37.0 [34.0–39.0] |
 | (d) median principals per artifact label | 3.0 [3.0–3.0] |
 | (d) share of distinct doc labels with ≤3 principals | 27.9% [27.6–28.3] |
@@ -39,7 +39,7 @@
 
 ### Sweep: private-doc fraction × ACL structure (5 seeds; mean [min–max]; verdict vs 50% threshold)
 
-**Structure: few_large — few large groups**
+**Structure: few_large - few large groups**
 
 | private docs | signatures | doc labels (aud.) | artifact labels (aud.) | doc realized-shared mass | storage ratio (docs) | (f) doc mass ≤3 | (f) verdict | (g) artifact mass ≤3 | (g) verdict |
 |---|---|---|---|---|---|---|---|---|---|
@@ -54,7 +54,7 @@
 | 70% | 8,134 | 17,610 | 10,468 | 30.4% [25.8–35.2] | 3.7× | 71.5% [66.2–75.9] | FAIL | 84.6% [75.7–90.9] | FAIL |
 | 80% | 8,134 | 16,877 | 8,928 | 20.8% [15.9–27.2] | 2.7× | 81.5% [78.3–85.4] | FAIL | 92.8% [90.5–96.7] | FAIL |
 
-**Structure: medium — medium (baseline)**
+**Structure: medium - medium (baseline)**
 
 | private docs | signatures | doc labels (aud.) | artifact labels (aud.) | doc realized-shared mass | storage ratio (docs) | (f) doc mass ≤3 | (f) verdict | (g) artifact mass ≤3 | (g) verdict |
 |---|---|---|---|---|---|---|---|---|---|
@@ -69,7 +69,7 @@
 | 70% | 9,859 | 25,614 | 9,570 | 30.3% [25.2–35.0] | 3.0× | 72.4% [66.9–76.9] | FAIL | 87.7% [85.0–90.7] | FAIL |
 | 80% | 9,859 | 22,251 | 8,432 | 20.4% [15.4–26.4] | 2.3× | 82.5% [79.1–86.8] | FAIL | 93.6% [91.4–95.5] | FAIL |
 
-**Structure: many_small — many small groups**
+**Structure: many_small - many small groups**
 
 | private docs | signatures | doc labels (aud.) | artifact labels (aud.) | doc realized-shared mass | storage ratio (docs) | (f) doc mass ≤3 | (f) verdict | (g) artifact mass ≤3 | (g) verdict |
 |---|---|---|---|---|---|---|---|---|---|

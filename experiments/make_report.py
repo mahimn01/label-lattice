@@ -18,10 +18,10 @@ table(["Measure", "Value"], [
  ("(a) same, counting only groups that appear in some ACL", nm(M["sig_relevant"])),
  ("(a) same, plus users with an individual grant (private/ad-hoc doc) made unique", nm(M["sig_with_grants"])),
  ("(a) users alone in their signature class", pc(M["frac_users_singleton_sig"])),
- ("(b) distinct document labels — by ACL set (symbolic)", nm(M["doc_labels_acl"])),
- ("(b) distinct document labels — by audience (canonical)", nm(M["doc_labels_aud"])),
- ("(c) distinct derived-artifact labels — symbolic (set of input ACLs)", nm(M["art_labels_sym"])),
- ("(c) distinct derived-artifact labels — by audience (canonical)", nm(M["art_labels_aud"])),
+ ("(b) distinct document labels - by ACL set (symbolic)", nm(M["doc_labels_acl"])),
+ ("(b) distinct document labels - by audience (canonical)", nm(M["doc_labels_aud"])),
+ ("(c) distinct derived-artifact labels - symbolic (set of input ACLs)", nm(M["art_labels_sym"])),
+ ("(c) distinct derived-artifact labels - by audience (canonical)", nm(M["art_labels_aud"])),
  ("(d) median principals per doc label (over distinct labels)", nm(M["doc_label_median_aud"], 1)),
  ("(d) median principals per artifact label", nm(M["art_label_median_aud"], 1)),
  ("(d) share of distinct doc labels with ≤3 principals", pc(M["doc_label_frac_le3"])),
@@ -45,7 +45,7 @@ table(["Principals per label", "# distinct doc labels", "doc read mass", "# dist
 
 out.append("### Sweep: private-doc fraction × ACL structure (5 seeds; mean [min–max]; verdict vs 50% threshold)\n")
 for st, desc in (("few_large", "few large groups"), ("medium", "medium (baseline)"), ("many_small", "many small groups")):
-    out.append(f"**Structure: {st} — {desc}**\n")
+    out.append(f"**Structure: {st} - {desc}**\n")
     rows = []
     for p in (0, 5, 10, 20, 30, 40, 50, 60, 70, 80):
         sc = S[f"grid/{st}/priv{p:02d}"]; m = sc["metrics"]
