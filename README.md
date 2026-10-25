@@ -51,6 +51,122 @@ We call the fix Lazy-Meet Factoring. It has three steps:
 
 Think of baking. Before, we baked a whole cake for each small group. Now we bake each layer once and share it. We only stack the layers when someone orders the cake.
 
+## Architecture in pictures
+
+These diagrams show the design. Each one has a one-line caption.
+
+### 1. The problem and the fix
+
+```mermaid
+flowchart LR
+    subgraph BASE["First idea: one big result per overlap"]
+        direction TB
+        B1["Many files<br/>each with its own allowed list"] --> B2["One costly job<br/>over all files together"]
+        B2 --> B3["Result tagged with the overlap<br/>of all the lists"]
+        B3 --> B4["Overlap is tiny<br/>so only a few people can reuse it"]
+    end
+    subgraph LMF["The fix: Lazy-Meet Factoring"]
+        direction TB
+        L1["Many files<br/>each with its own allowed list"] --> L2["Costly job runs once per file<br/>tagged with that file's own list"]
+        L2 --> L3["Shared widely<br/>by everyone allowed on that file"]
+        L3 --> L4["Cheap join on request<br/>only if the asker may see every file"]
+        L4 --> L5["Joined result saved<br/>under the overlap tag"]
+    end
+    BASE -. "split the work, delay the overlap" .-> LMF
+```
+
+*Caption: the costly work moves from the overlap to each single file, so it is shared widely.*
+
+### 2. The write path
+
+```mermaid
+flowchart TD
+    W1["New or edited document"] --> W2["Document store<br/>saves a new version"]
+    W2 --> W3["Ask the ACL provider<br/>who may read this document"]
+    W3 --> W4["Label = that document's own allowed list"]
+    W2 --> W5["Compute artifacts for this version only<br/>claim list, chunk note, KV segment"]
+    W5 --> W6["Artifact cache<br/>key = doc, version, kind"]
+    W4 --> W6
+    W2 --> W7["Old version: mark old artifacts<br/>and joins that used it as stale"]
+    W7 --> W8["Drop leases that touch this document"]
+```
+
+*Caption: each document is processed alone, and every piece it makes carries only that document's label.*
+
+### 3. The read path
+
+```mermaid
+flowchart TD
+    R1["Caller asks for a joined answer<br/>over documents A, B, C"] --> R2{"Entitlement gate<br/>may this caller read A, B and C?"}
+    R2 -- "no, or unknown document" --> R3["Same refusal every time<br/>no cache is touched, no compute starts"]
+    R2 -- "yes" --> R4{"Joined result already cached<br/>under the overlap label?"}
+    R4 -- "yes" --> R7["Return joined result"]
+    R4 -- "no" --> R5["Fetch per-document artifacts<br/>compute any that are missing, once"]
+    R5 --> R6["Lazy join of the artifacts"]
+    R6 --> R8["Save under the overlap label"]
+    R8 --> R7
+```
+
+*Caption: the gate runs before any shared cache is read, so a refused caller learns nothing from hits or misses.*
+
+### 4. Revocation with ACL-epoch leases
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant ACL as ACL provider
+    participant Store as LMF store
+    participant User as Caller
+    User->>Store: read joined result
+    Store->>ACL: is the caller entitled?
+    ACL-->>Store: yes, at epoch 7
+    Store-->>User: result, lease valid until time T
+    Admin->>ACL: remove access
+    ACL->>ACL: epoch becomes 8
+    ACL-->>Store: push: documents changed
+    Store->>Store: drop leases for those documents
+    User->>Store: read again
+    Store->>ACL: is the caller entitled?
+    ACL-->>Store: no
+    Store-->>User: refused
+    Note over Store,User: If the push is lost, the lease still ends at T.<br/>Stale access can never last longer than one lease.
+```
+
+*Caption: a push drops access at once, and a lease puts a hard time limit on access if the push is lost.*
+
+### 5. Code map
+
+```mermaid
+flowchart LR
+    subgraph SIMU["Simulation"]
+        direction TB
+        SIM["sim.py<br/>pretend company and the first idea"]
+        FIX["fix.py<br/>the fix, in the simulation"]
+        RUN["run_all.py and run_fix.py<br/>run every setting and seed"]
+        REP["make_report.py and make_fix_report.py<br/>make the tables"]
+    end
+    subgraph REF["Small reference models"]
+        direction TB
+        LAT["lattice.py<br/>ACL service, clock, labels"]
+        LMF["lmf_store.py<br/>store with gate, join, leases"]
+    end
+    subgraph TESTS["Tests"]
+        direction TB
+        T1["test_revocation.py"]
+        T2["test_lmf.py"]
+    end
+    FIX --> SIM
+    RUN --> SIM
+    RUN --> FIX
+    REP --> RUN
+    LMF --> LAT
+    T1 --> LAT
+    T2 --> LMF
+    T2 --> FIX
+```
+
+*Caption: the code is a simulation plus two small reference models, and tests cover both.*
+
 ## Results
 
 The measure below is the share of reads that can be reused by only 3 people or fewer. Lower is better. The limit is 50%. These are averages over 5 runs. The "after" number also counts the cost of the join step.
