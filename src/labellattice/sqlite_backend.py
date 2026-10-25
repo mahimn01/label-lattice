@@ -11,6 +11,7 @@ import sqlite3
 import threading
 from typing import Sequence
 
+from .errors import LabelLatticeError
 from .backend import Backend, CompositeRow, DocRow
 
 SCHEMA_VERSION = "1"
@@ -45,7 +46,8 @@ class SqliteBackend(Backend):
             if row is None:
                 self._db.execute("INSERT INTO meta (k, v) VALUES ('schema', ?)", (SCHEMA_VERSION,))
             elif row[0] != SCHEMA_VERSION:
-                raise RuntimeError(f"unsupported database schema version {row[0]!r}")
+                self._db.close()
+                raise LabelLatticeError(f"unsupported database schema version {row[0]!r}")
 
     def _tx(self):
         return _Tx(self._db, self._lock)
